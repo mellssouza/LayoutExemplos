@@ -1,0 +1,199 @@
+import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var container: FrameLayout
+    private var currentLayout = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val baseLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT)
+        }
+
+        val btnNext = Button(this).apply {
+            text = "Próximo layout"
+        }
+        baseLayout.addView(btnNext)
+
+        container = FrameLayout(this).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        }
+        baseLayout.addView(container)
+
+        setContentView(baseLayout)
+
+        showLayout(currentLayout)
+
+        btnNext.setOnClickListener {
+            currentLayout = (currentLayout + 1) % 5
+            showLayout(currentLayout)
+        }
+    }
+
+    private fun showLayout(index: Int) {
+        container.removeAllViews()
+        when (index) {
+            0 -> showFrameLayout()
+            1 -> showLinearLayout()
+            2 -> showRelativeLayout()
+            3 -> showConstraintLayout()
+            4 -> showRecyclerView()
+        }
+    }
+
+    private fun showFrameLayout() {
+        val frame = FrameLayout(this).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT)
+        }
+        val imageView = ImageView(this).apply {
+            setBackgroundColor(0xFFBBBBBB.toInt())
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT)
+        }
+        val textView = TextView(this).apply {
+            text = "FrameLayout: Texto sobre imagem"
+            setTextColor(0xFF000000.toInt())
+            textSize = 20f
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT).apply {
+                gravity = android.view.Gravity.CENTER
+            }
+        }
+        frame.addView(imageView)
+        frame.addView(textView)
+        container.addView(frame)
+    }
+
+    private fun showLinearLayout() {
+        val linear = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT)
+            setPadding(20, 20, 20, 20)
+        }
+        val tv = TextView(this).apply {
+            text = "LinearLayout: Texto 1"
+            textSize = 18f
+        }
+        val btn = Button(this).apply {
+            text = "Botão"
+        }
+        linear.addView(tv)
+        linear.addView(btn)
+        container.addView(linear)
+    }
+
+    private fun showRelativeLayout() {
+        val relative = android.widget.RelativeLayout(this).apply {
+            layoutParams = android.widget.RelativeLayout.LayoutParams(
+                android.widget.RelativeLayout.LayoutParams.MATCH_PARENT,
+                android.widget.RelativeLayout.LayoutParams.MATCH_PARENT)
+            setPadding(20, 20, 20, 20)
+        }
+
+        val editText = EditText(this).apply {
+            id = View.generateViewId()
+            hint = "Digite algo"
+            layoutParams = android.widget.RelativeLayout.LayoutParams(
+                android.widget.RelativeLayout.LayoutParams.MATCH_PARENT,
+                android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT)
+        }
+        val button = Button(this).apply {
+            text = "Enviar"
+            id = View.generateViewId()
+            val params = android.widget.RelativeLayout.LayoutParams(
+                android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT,
+                android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT)
+            params.addRule(android.widget.RelativeLayout.BELOW, editText.id)
+            params.topMargin = 16
+            layoutParams = params
+        }
+        relative.addView(editText)
+        relative.addView(button)
+        container.addView(relative)
+    }
+
+    private fun showConstraintLayout() {
+        val constraint = ConstraintLayout(this).apply {
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.MATCH_PARENT)
+            setPadding(20, 20, 20, 20)
+            id = View.generateViewId()
+        }
+
+        val textView = TextView(this).apply {
+            id = View.generateViewId()
+            text = "ConstraintLayout: Texto centralizado no topo"
+            textSize = 18f
+        }
+
+        constraint.addView(textView)
+
+        val set = androidx.constraintlayout.widget.ConstraintSet()
+        set.clone(constraint)
+        set.connect(textView.id, androidx.constraintlayout.widget.ConstraintSet.TOP, constraint.id, androidx.constraintlayout.widget.ConstraintSet.TOP, 32)
+        set.connect(textView.id, androidx.constraintlayout.widget.ConstraintSet.START, constraint.id, androidx.constraintlayout.widget.ConstraintSet.START)
+        set.connect(textView.id, androidx.constraintlayout.widget.ConstraintSet.END, constraint.id, androidx.constraintlayout.widget.ConstraintSet.END)
+        set.applyTo(constraint)
+
+        container.addView(constraint)
+    }
+
+    private fun showRecyclerView() {
+        val recyclerView = RecyclerView(this).apply {
+            layoutParams = RecyclerView.LayoutParams(
+                RecyclerView.LayoutParams.MATCH_PARENT,
+                RecyclerView.LayoutParams.MATCH_PARENT)
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = SimpleAdapter(generateDummyList())
+        }
+        container.addView(recyclerView)
+    }
+
+    private fun generateDummyList(): List<String> = List(20) { "Item #${it + 1}" }
+
+    class SimpleAdapter(private val items: List<String>) : RecyclerView.Adapter<SimpleAdapter.ViewHolder>() {
+        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val textView: TextView = itemView as TextView
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val tv = TextView(parent.context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT)
+                setPadding(20, 20, 20, 20)
+                textSize = 18f
+            }
+            return ViewHolder(tv)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            holder.textView.text = items[position]
+        }
+
+        override fun getItemCount(): Int = items.size
+    }
+}
