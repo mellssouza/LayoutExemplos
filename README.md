@@ -9,6 +9,8 @@ Quando você quer colocar um elemento sobre o outro, tipo uma imagem de fundo e 
 Exemplo explicado:
 No exemplo, a imagem ocupa toda a tela (fundo) e o texto fica centralizado em cima dela usando android:layout_gravity="center".
 
+
+
 2. LinearLayout
 
 O que faz:
@@ -19,6 +21,8 @@ Para layouts simples que você quer alinhar itens em uma coluna ou linha, tipo u
 
 Exemplo explicado:
 Os elementos são colocados um embaixo do outro (orientation="vertical"), o TextView fica em cima e o Button embaixo.
+
+
 
 3. RelativeLayout
 
@@ -31,6 +35,8 @@ Para layouts onde os elementos precisam ficar posicionados em relação uns aos 
 Exemplo explicado:
 O botão fica posicionado logo abaixo do campo de texto com margem, usando android:layout_below="@id/campoTexto".
 
+
+
 4. ConstraintLayout
 
 O que faz:
@@ -41,6 +47,8 @@ Para layouts complexos que precisam ser flexíveis e performáticos, evitando hi
 
 Exemplo explicado:
 O texto está posicionado no topo da tela, centralizado horizontalmente, por meio das restrições layout_constraintStart_toStartOf="parent" e layout_constraintEnd_toEndOf="parent", com uma margem no topo.
+
+
 
 5. RecyclerView
 
